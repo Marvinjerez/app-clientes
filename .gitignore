@@ -1,0 +1,7 @@
+# Flutter
+.dart_tool/
+build/
+packages/
+
+# Go
+bin/
