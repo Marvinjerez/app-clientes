@@ -19,7 +19,7 @@ CREATE TABLE clientes (
 -- Insertar datos de prueba
 INSERT INTO clientes (dpi, nombre, email, telefono, created_at, updated_at)
 VALUES 
-('4580751200369', 'Marvin Jenaro', 'mjerez@hotmail.com', '58784512', NOW(), NOW()),
+('7895464564123', 'Marvin Jenaro', 'mjerez@hotmail.com', '58784512', NOW(), NOW()),
 ('1234567890123', 'Denis Sincal', 'dsincal@hotmail.com', '44445555', NOW(), NOW()),
 ('7895420000014', 'Javier Gomez', 'jgomez@hotmail.com', '85212369', NOW(), NOW()),
 ('7895661321310', 'Guiller Castañeda', 'gcastaneda@hotmail.com', '78965432', NOW(), NOW()),
