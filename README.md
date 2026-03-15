@@ -122,6 +122,23 @@ PUT /api/v1/clientes/{id}
 
 DELETE /api/v1/clientes/{id}
 
+## Códigos de respuesta HTTP
+
+200 OK  
+Operación exitosa.
+
+201 Created  
+Recurso creado correctamente.
+
+400 Bad Request  
+Datos enviados incorrectos.
+
+404 Not Found  
+El recurso no existe.
+
+500 Internal Server Error  
+Error interno del servidor.
+
 ## Funcionalidades
 
 ✔ Crear clientes  
