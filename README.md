@@ -20,12 +20,14 @@ Backend
 - Go
 - Gin
 - GORM
+- JWT Auth
 - MySQL
 
 Frontend
 - Flutter
 - Dart
 - HTTP package
+- Material Design 3
 
 ## Estructura del proyecto
 
@@ -188,6 +190,7 @@ Error interno del servidor.
 
 ## Funcionalidades
 
+✔ Login de usuarios
 ✔ Crear clientes  
 ✔ Listar clientes  
 ✔ Buscar cliente por ID  
