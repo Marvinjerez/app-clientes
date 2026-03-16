@@ -138,7 +138,6 @@ class _CrearClienteState extends State<CrearCliente> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         title: Text(clienteEditar == null ? "Crear cliente" : "Editar cliente"),
         backgroundColor: const Color.fromARGB(255, 105, 207, 235),
@@ -162,7 +161,7 @@ class _CrearClienteState extends State<CrearCliente> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -179,7 +178,7 @@ class _CrearClienteState extends State<CrearCliente> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: const Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -199,7 +198,7 @@ class _CrearClienteState extends State<CrearCliente> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
                 const SizedBox(height: 15),
@@ -216,7 +215,7 @@ class _CrearClienteState extends State<CrearCliente> {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     filled: true,
-                    fillColor: Colors.white,
+                    fillColor: Color.fromARGB(255, 255, 255, 255),
                   ),
                 ),
                 const SizedBox(height: 25),

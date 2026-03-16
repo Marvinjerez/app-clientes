@@ -7,6 +7,7 @@ Aplicación para gestionar clientes.
 
  El sistema permite realizar operaciones CRUD:
 
+ - Login  
  - Crear clientes
  - Listar clientes
  - Buscar clientes por ID
@@ -154,9 +155,11 @@ POST /api/v1/usuarios
 Body JSON
 
 {
-    "Usuario": "mjenaro",
-    "Password": "12481248"
+    "Usuario": "admin",
+    "Password": "12345678"
 }
+
+**Para crear un usuario los mejor hacerlo mediante postman directo al API ya que el mismo hace hash a la contraseña**
 
 ### Actualizar cliente
 

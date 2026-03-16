@@ -1,17 +1,36 @@
-import 'package:app_clientes/pages/crear_clientes.dart';
-import 'package:app_clientes/pages/lista_clientes.dart';
-import 'package:app_clientes/pages/login.dart';
 import 'package:flutter/material.dart';
+import 'pages/login.dart';
+import 'pages/lista_clientes.dart';
+import 'pages/crear_clientes.dart';
 
 void main() {
-
-  runApp(const MyApp());
-
+  runApp(MyApp());
 }
 
-class MyApp extends StatelessWidget {
+class MyApp extends StatefulWidget {
 
-  const MyApp({super.key});
+  static _MyAppState? of(BuildContext context) =>
+      context.findAncestorStateOfType<_MyAppState>();
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+
+  ThemeMode themeMode = ThemeMode.light;
+
+  void cambiarTema() {
+
+    setState(() {
+
+      themeMode = themeMode == ThemeMode.light
+          ? ThemeMode.dark
+          : ThemeMode.light;
+
+    });
+
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -20,17 +39,27 @@ class MyApp extends StatelessWidget {
 
       debugShowCheckedModeBanner: false,
 
-      title: "Clientes App",
+      themeMode: themeMode,
 
-      initialRoute: Login.ROUTE,
+    theme: ThemeData(
+    brightness: Brightness.light,
+    primarySwatch: Colors.blue,
+    scaffoldBackgroundColor: Colors.grey[100],
+    ),
+
+    darkTheme: ThemeData(
+    brightness: Brightness.dark,
+    primarySwatch: Colors.blue,
+    scaffoldBackgroundColor: const Color(0xFF121212),
+    ),
+
+      initialRoute: "/login",
 
       routes: {
 
-        Login.ROUTE : (context) => Login(),
-
-        ListaClientes.ROUTE : (context) => ListaClientes(),
-
-        CrearCliente.ROUTE : (context) => CrearCliente(),
+        "/login": (context) => Login(),
+        "/lista": (context) => ListaClientes(),
+        "/crear": (context) => CrearCliente(),
 
       },
 
