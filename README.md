@@ -78,6 +78,8 @@ flutter run
 
 ## API Endpoints
 
+## API Clientes
+
 Base URL
 
 http://localhost:8080/api/v1/clientes
@@ -121,6 +123,48 @@ PUT /api/v1/clientes/{id}
 ### Eliminar cliente
 
 DELETE /api/v1/clientes/{id}
+
+## API Usuarios
+
+### Obtener todos los usuarios
+
+ GET /api/v1/usuarios
+
+Respuesta
+
+[
+  {
+    "ID": 1,
+    "CreatedAt": "0001-01-01T00:00:00Z",
+    "UpdatedAt": "0001-01-01T00:00:00Z",
+    "DeletedAt": null,
+    "Usuario": "mjenaro",
+    "Password": ""
+  }
+]
+
+### Obtener cliente por ID
+
+GET /api/v1/usuarios/{id}
+
+### Crear cliente
+
+POST /api/v1/usuarios
+
+Body JSON
+
+{
+    "Usuario": "mjenaro",
+    "Password": "12481248"
+}
+
+### Actualizar cliente
+
+PUT /api/v1/usuarios/{id}
+
+### Eliminar usuario
+
+DELETE /api/v1/usuarios/{id}
 
 ## Códigos de respuesta HTTP
 

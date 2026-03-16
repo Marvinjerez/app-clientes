@@ -37,8 +37,3 @@ CREATE TABLE usuarios (
     deleted_at DATETIME
 );
 
--- Insertar usuario de prueba
-INSERT INTO usuarios (usuario, password, created_at, updated_at)
-VALUES ('admin', '$2y$10$e0NR5s9z1Z', NOW(), NOW()),
-('jgomez', '$2y$10$e0NR5s9z1Z', NOW(), NOW())
-; -- La contraseña debe ser hasheada con bcrypt
