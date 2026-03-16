@@ -12,135 +12,139 @@ class Login extends StatefulWidget {
 }
 
 class _LoginState extends State<Login> {
-
   final usuarioController = TextEditingController();
   final passwordController = TextEditingController();
 
   final AuthService authService = AuthService();
 
   bool loading = false;
-
   final _formKey = GlobalKey<FormState>();
 
   void login() async {
+    if (!_formKey.currentState!.validate()) return;
 
-    if(!_formKey.currentState!.validate()){
-      return;
-    }
-
-    setState(() {
-      loading = true;
-    });
+    setState(() => loading = true);
 
     bool success = await authService.login(
       usuarioController.text,
-      passwordController.text
+      passwordController.text,
     );
 
-    setState(() {
-      loading = false;
-    });
+    setState(() => loading = false);
 
-    if(success){
-
+    if (success) {
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(
-          builder: (context) => ListaClientes()
-        ),
+        MaterialPageRoute(builder: (context) => ListaClientes()),
       );
-
-    }else{
-
+    } else {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
           content: Text("Usuario o contraseña incorrectos"),
+          backgroundColor: Colors.redAccent,
+          duration: Duration(seconds: 2),
         ),
       );
-
     }
   }
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
+      backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         title: const Text("Login"),
+        backgroundColor: const Color(0xFF4CAF50),
+        elevation: 4,
       ),
-
       body: Center(
-
         child: SingleChildScrollView(
-
           child: Padding(
-            padding: const EdgeInsets.all(20),
-
+            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 20),
             child: Form(
               key: _formKey,
-
               child: Column(
-
                 children: [
-
-                  const Icon(
-                    Icons.lock,
-                    size: 80,
-                    color: Colors.blue,
+                  // Icono de login grande
+                  Container(
+                    decoration: BoxDecoration(
+                      color: const Color(0xFF4CAF50).withOpacity(0.1),
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(24),
+                    child: const Icon(
+                      Icons.lock,
+                      size: 80,
+                      color: Color(0xFF4CAF50),
+                    ),
                   ),
-
                   const SizedBox(height: 30),
 
+                  // Usuario
                   TextFormField(
                     controller: usuarioController,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Usuario",
-                      prefixIcon: Icon(Icons.person),
-                      border: OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.person),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
                     ),
-                    validator: (value) {
-                      if(value == null || value.isEmpty){
-                        return "Ingrese el usuario";
-                      }
-                      return null;
-                    },
+                    validator: (value) =>
+                        (value == null || value.isEmpty) ? "Ingrese el usuario" : null,
                   ),
-
                   const SizedBox(height: 20),
 
+                  // Contraseña
                   TextFormField(
                     controller: passwordController,
                     obscureText: true,
-                    decoration: const InputDecoration(
+                    decoration: InputDecoration(
                       labelText: "Contraseña",
-                      prefixIcon: Icon(Icons.lock),
-                      border: OutlineInputBorder(),
+                      prefixIcon: const Icon(Icons.lock),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      filled: true,
+                      fillColor: Colors.white,
                     ),
-                    validator: (value) {
-                      if(value == null || value.isEmpty){
-                        return "Ingrese la contraseña";
-                      }
-                      return null;
-                    },
+                    validator: (value) =>
+                        (value == null || value.isEmpty) ? "Ingrese la contraseña" : null,
                   ),
-
                   const SizedBox(height: 30),
 
-                  loading
-                      ? const CircularProgressIndicator()
-                      : SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: login,
-                            child: const Text(
-                              "Ingresar",
-                              style: TextStyle(fontSize: 16),
+                  // Botón de login con animación de carga
+                  AnimatedSwitcher(
+                    duration: const Duration(milliseconds: 300),
+                    child: loading
+                        ? const CircularProgressIndicator(
+                            color: Color(0xFF4CAF50),
+                          )
+                        : SizedBox(
+                            width: double.infinity,
+                            height: 50,
+                            child: ElevatedButton(
+                              onPressed: login,
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: const Color(0xFF4CAF50),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                elevation: 3,
+                              ),
+                              child: const Text(
+                                "Ingresar",
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
                           ),
-                        )
-
+                  ),
                 ],
               ),
             ),
@@ -150,4 +154,3 @@ class _LoginState extends State<Login> {
     );
   }
 }
-
