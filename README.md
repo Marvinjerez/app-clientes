@@ -48,7 +48,7 @@ frontend/
 
 1. Clonar el repositorio
 
-git clone [https:](https://github.com/usuario/proyecto.git)
+git clone [https:](https://github.com/Marvinjerez/app-clientes.git)
 
 2. Entrar al backend
 
