@@ -17,6 +17,7 @@ func main() {
 	r := gin.Default()
 
 	routes.ClienteRouter(r)
+	routes.UsuarioRouter(r)
 
 	r.GET("/", func(c *gin.Context) {
 		c.JSON(http.StatusOK, gin.H{

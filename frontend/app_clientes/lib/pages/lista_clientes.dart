@@ -6,7 +6,7 @@ import 'package:http/http.dart' as http;
 
 class ListaClientes extends StatefulWidget {
 
-  static const String ROUTE = "/";
+  static const String ROUTE = "/lista";
 
   @override
   State<ListaClientes> createState() => _ListaClientesState();

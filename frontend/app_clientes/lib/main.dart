@@ -1,5 +1,6 @@
 import 'package:app_clientes/pages/crear_clientes.dart';
 import 'package:app_clientes/pages/lista_clientes.dart';
+import 'package:app_clientes/pages/login.dart';
 import 'package:flutter/material.dart';
 
 void main() {
@@ -21,9 +22,11 @@ class MyApp extends StatelessWidget {
 
       title: "Clientes App",
 
-      initialRoute: ListaClientes.ROUTE,
+      initialRoute: Login.ROUTE,
 
       routes: {
+
+        Login.ROUTE : (context) => Login(),
 
         ListaClientes.ROUTE : (context) => ListaClientes(),
 

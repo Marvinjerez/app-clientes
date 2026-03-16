@@ -26,3 +26,19 @@ VALUES
 ('8522001364479', 'Pablo Escobar', 'pescobar@hotmail.com', '89651520', NOW(), NOW()),
 ('3387567601001', 'Laura Castañeda', 'lcastaneda@hotmail.com', '74196301', NOW(), NOW())
 ;
+
+-- Crear tabla de usuarios
+CREATE TABLE usuarios (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    usuario VARCHAR(100) UNIQUE NOT NULL,
+    password VARCHAR(255) NOT NULL,
+    created_at DATETIME,
+    updated_at DATETIME,
+    deleted_at DATETIME
+);
+
+-- Insertar usuario de prueba
+INSERT INTO usuarios (usuario, password, created_at, updated_at)
+VALUES ('admin', '$2y$10$e0NR5s9z1Z', NOW(), NOW()),
+('jgomez', '$2y$10$e0NR5s9z1Z', NOW(), NOW())
+; -- La contraseña debe ser hasheada con bcrypt
