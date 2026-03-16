@@ -54,7 +54,7 @@ class _LoginState extends State<Login> {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         title: const Text("Login"),
-        backgroundColor: const Color(0xFF4CAF50),
+        backgroundColor: const Color.fromARGB(255, 105, 207, 235),
         elevation: 4,
       ),
       body: Center(
@@ -68,14 +68,14 @@ class _LoginState extends State<Login> {
                   // Icono de login grande
                   Container(
                     decoration: BoxDecoration(
-                      color: const Color(0xFF4CAF50).withOpacity(0.1),
+                      color: const Color.fromARGB(255, 105, 207, 235).withOpacity(0.1),
                       shape: BoxShape.circle,
                     ),
                     padding: const EdgeInsets.all(24),
                     child: const Icon(
                       Icons.lock,
                       size: 80,
-                      color: Color(0xFF4CAF50),
+                      color: Color.fromARGB(255, 105, 207, 235),
                     ),
                   ),
                   const SizedBox(height: 30),
@@ -120,7 +120,7 @@ class _LoginState extends State<Login> {
                     duration: const Duration(milliseconds: 300),
                     child: loading
                         ? const CircularProgressIndicator(
-                            color: Color(0xFF4CAF50),
+                            color: Color.fromARGB(255, 105, 207, 235),
                           )
                         : SizedBox(
                             width: double.infinity,
@@ -128,7 +128,7 @@ class _LoginState extends State<Login> {
                             child: ElevatedButton(
                               onPressed: login,
                               style: ElevatedButton.styleFrom(
-                                backgroundColor: const Color(0xFF4CAF50),
+                                backgroundColor: const Color.fromARGB(255, 105, 207, 235),
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(12),
                                 ),

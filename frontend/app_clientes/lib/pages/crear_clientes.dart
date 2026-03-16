@@ -60,7 +60,7 @@ class _CrearClienteState extends State<CrearCliente> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Cliente guardado correctamente"),
-            backgroundColor: Color(0xFF4CAF50),
+            backgroundColor: Color.fromARGB(255, 105, 207, 235),
             duration: Duration(seconds: 2),
           ),
         );
@@ -108,7 +108,7 @@ class _CrearClienteState extends State<CrearCliente> {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
             content: Text("Cliente actualizado correctamente"),
-            backgroundColor: Color(0xFF4CAF50),
+            backgroundColor: Color.fromARGB(255, 105, 207, 235),
             duration: Duration(seconds: 2),
           ),
         );
@@ -141,7 +141,7 @@ class _CrearClienteState extends State<CrearCliente> {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         title: Text(clienteEditar == null ? "Crear cliente" : "Editar cliente"),
-        backgroundColor: const Color(0xFF4CAF50),
+        backgroundColor: const Color.fromARGB(255, 105, 207, 235),
       ),
       body: SingleChildScrollView(
         child: Padding(
@@ -225,7 +225,7 @@ class _CrearClienteState extends State<CrearCliente> {
                 AnimatedSwitcher(
                   duration: const Duration(milliseconds: 300),
                   child: loading
-                      ? const CircularProgressIndicator(color: Color(0xFF4CAF50))
+                      ? const CircularProgressIndicator(color: Color.fromARGB(255, 105, 207, 235))
                       : SizedBox(
                           width: double.infinity,
                           height: 50,
@@ -240,7 +240,7 @@ class _CrearClienteState extends State<CrearCliente> {
                               }
                             },
                             style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color(0xFF4CAF50),
+                              backgroundColor: const Color.fromARGB(255, 105, 207, 235),
                               shape: RoundedRectangleBorder(
                                 borderRadius: BorderRadius.circular(12),
                               ),

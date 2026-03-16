@@ -137,10 +137,10 @@ class _ListaClientesState extends State<ListaClientes> {
       backgroundColor: const Color(0xFFF5F5F5),
       appBar: AppBar(
         title: const Text("Listado de clientes"),
-        backgroundColor: const Color(0xFF4CAF50),
+        backgroundColor: const Color.fromARGB(255, 105, 207, 235),
       ),
       floatingActionButton: FloatingActionButton(
-        backgroundColor: const Color(0xFF4CAF50),
+        backgroundColor: const Color.fromARGB(255, 105, 207, 235),
         child: const Icon(Icons.add, color: Colors.white),
         onPressed: () {
           Navigator.pushNamed(context, CrearCliente.ROUTE).then((value) {
@@ -149,7 +149,7 @@ class _ListaClientesState extends State<ListaClientes> {
         },
       ),
       body: cargando
-          ? const Center(child: CircularProgressIndicator(color: Color(0xFF4CAF50)))
+          ? const Center(child: CircularProgressIndicator(color: Color.fromARGB(255, 105, 207, 235)))
           : Column(
               children: [
                 Padding(
@@ -181,7 +181,7 @@ class _ListaClientesState extends State<ListaClientes> {
                 ),
                 Expanded(
                   child: RefreshIndicator(
-                    color: const Color(0xFF4CAF50),
+                    color: const Color.fromARGB(255, 105, 207, 235),
                     onRefresh: cargarClientes,
                     child: ListView.builder(
                       itemCount: clientes.length,
@@ -192,7 +192,7 @@ class _ListaClientesState extends State<ListaClientes> {
                           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                           elevation: 2,
                           child: ListTile(
-                            leading: const Icon(Icons.person, size: 35, color: Color(0xFF4CAF50)),
+                            leading: const Icon(Icons.person, size: 35, color: Color.fromARGB(255, 105, 207, 235)),
                             title: Text(
                               cliente["Nombre"] ?? "Sin nombre",
                               style: const TextStyle(
