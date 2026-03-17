@@ -11,6 +11,7 @@ class CrearCliente extends StatefulWidget {
 }
 
 class _CrearClienteState extends State<CrearCliente> {
+
   final _formKey = GlobalKey<FormState>();
 
   final dpiController = TextEditingController();
@@ -19,243 +20,226 @@ class _CrearClienteState extends State<CrearCliente> {
   final telefonoController = TextEditingController();
 
   Map? clienteEditar;
+
   bool loading = false;
+  bool visible = false;
 
   @override
   void initState() {
     super.initState();
 
+    Future.delayed(const Duration(milliseconds: 200), (){
+      setState(() => visible = true);
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       final args = ModalRoute.of(context)!.settings.arguments as Map?;
       if (args != null) {
-        setState(() {
-          clienteEditar = args;
-          dpiController.text = clienteEditar!["Dpi"] ?? "";
-          nombreController.text = clienteEditar!["Nombre"] ?? "";
-          emailController.text = clienteEditar!["Email"] ?? "";
-          telefonoController.text = clienteEditar!["Telefono"] ?? "";
-        });
+        clienteEditar = args;
+        dpiController.text = clienteEditar!["Dpi"] ?? "";
+        nombreController.text = clienteEditar!["Nombre"] ?? "";
+        emailController.text = clienteEditar!["Email"] ?? "";
+        telefonoController.text = clienteEditar!["Telefono"] ?? "";
+        setState(() {});
       }
     });
   }
 
   Future guardarCliente() async {
+
     setState(() => loading = true);
 
-    try {
-      final response = await http
-          .post(
-            Uri.parse("${Api.baseUrl}/clientes"),
-            headers: {"Content-Type": "application/json"},
-            body: jsonEncode({
-              "dpi": dpiController.text,
-              "nombre": nombreController.text,
-              "email": emailController.text,
-              "telefono": telefonoController.text
-            }),
-          )
-          .timeout(const Duration(seconds: 5));
+    final response = await http.post(
+      Uri.parse("${Api.baseUrl}/clientes"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "dpi": dpiController.text,
+        "nombre": nombreController.text,
+        "email": emailController.text,
+        "telefono": telefonoController.text
+      }),
+    );
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Cliente guardado correctamente"),
-            backgroundColor: Color.fromARGB(255, 105, 207, 235),
-            duration: Duration(seconds: 2),
-          ),
-        );
-        Navigator.pop(context, true);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error del servidor (${response.statusCode})"),
-            backgroundColor: Colors.redAccent,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("No se pudo conectar con la API"),
-          backgroundColor: Colors.redAccent,
-          duration: Duration(seconds: 2),
-        ),
-      );
-    } finally {
-      setState(() => loading = false);
+    setState(() => loading = false);
+
+    if (response.statusCode == 200) {
+      Navigator.pop(context, true);
     }
   }
 
   Future actualizarCliente(int id) async {
+
     setState(() => loading = true);
 
-    try {
-      final response = await http
-          .put(
-            Uri.parse("${Api.baseUrl}/clientes/$id"),
-            headers: {"Content-Type": "application/json"},
-            body: jsonEncode({
-              "dpi": dpiController.text,
-              "nombre": nombreController.text,
-              "email": emailController.text,
-              "telefono": telefonoController.text
-            }),
-          )
-          .timeout(const Duration(seconds: 5));
+    final response = await http.put(
+      Uri.parse("${Api.baseUrl}/clientes/$id"),
+      headers: {"Content-Type": "application/json"},
+      body: jsonEncode({
+        "dpi": dpiController.text,
+        "nombre": nombreController.text,
+        "email": emailController.text,
+        "telefono": telefonoController.text
+      }),
+    );
 
-      if (response.statusCode == 200) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Cliente actualizado correctamente"),
-            backgroundColor: Color.fromARGB(255, 105, 207, 235),
-            duration: Duration(seconds: 2),
-          ),
-        );
-        Navigator.pop(context, true);
-      } else {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text("Error del servidor (${response.statusCode})"),
-            backgroundColor: Colors.redAccent,
-            duration: const Duration(seconds: 2),
-          ),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("No se pudo conectar con la API"),
-          backgroundColor: Colors.redAccent,
-          duration: Duration(seconds: 2),
-        ),
-      );
-    } finally {
-      setState(() => loading = false);
+    setState(() => loading = false);
+
+    if (response.statusCode == 200) {
+      Navigator.pop(context, true);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text(clienteEditar == null ? "Crear cliente" : "Editar cliente"),
-        backgroundColor: const Color.fromARGB(255, 105, 207, 235),
-      ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.all(20),
-          child: Form(
-            key: _formKey,
-            child: Column(
-              children: [
-                // DPI
-                TextFormField(
-                  controller: dpiController,
-                  validator: (value) =>
-                      (value == null || value.isEmpty) ? "Campo obligatorio" : null,
-                  decoration: InputDecoration(
-                    labelText: "DPI",
-                    prefixIcon: const Icon(Icons.badge),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-                const SizedBox(height: 15),
 
-                // Nombre
-                TextFormField(
-                  controller: nombreController,
-                  validator: (value) =>
-                      (value == null || value.isEmpty) ? "Campo obligatorio" : null,
-                  decoration: InputDecoration(
-                    labelText: "Nombre",
-                    prefixIcon: const Icon(Icons.person),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: const Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-                const SizedBox(height: 15),
+      body: Stack(
+        children: [
 
-                // Email
-                TextFormField(
-                  controller: emailController,
-                  validator: (value) {
-                    if (value == null || value.isEmpty) return "Campo obligatorio";
-                    if (!value.contains("@")) return "Ingrese un email válido";
-                    return null;
-                  },
-                  decoration: InputDecoration(
-                    labelText: "Email",
-                    prefixIcon: const Icon(Icons.email),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-                const SizedBox(height: 15),
-
-                // Teléfono
-                TextFormField(
-                  controller: telefonoController,
-                  validator: (value) =>
-                      (value == null || value.isEmpty) ? "Campo obligatorio" : null,
-                  decoration: InputDecoration(
-                    labelText: "Teléfono",
-                    prefixIcon: const Icon(Icons.phone),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                    filled: true,
-                    fillColor: Color.fromARGB(255, 255, 255, 255),
-                  ),
-                ),
-                const SizedBox(height: 25),
-
-                // Botón Guardar / Actualizar con animación
-                AnimatedSwitcher(
-                  duration: const Duration(milliseconds: 300),
-                  child: loading
-                      ? const CircularProgressIndicator(color: Color.fromARGB(255, 105, 207, 235))
-                      : SizedBox(
-                          width: double.infinity,
-                          height: 50,
-                          child: ElevatedButton(
-                            onPressed: () {
-                              if (_formKey.currentState!.validate()) {
-                                if (clienteEditar == null) {
-                                  guardarCliente();
-                                } else {
-                                  actualizarCliente(clienteEditar!["ID"]);
-                                }
-                              }
-                            },
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: const Color.fromARGB(255, 105, 207, 235),
-                              shape: RoundedRectangleBorder(
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              elevation: 3,
-                            ),
-                            child: Text(
-                              clienteEditar == null ? "Guardar" : "Actualizar",
-                              style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                        ),
-                ),
-              ],
+          // 🌈 FONDO
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF6DD5FA),
+                  Color(0xFF2980B9),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
             ),
           ),
+
+          SafeArea(
+
+            child: Center(
+
+              child: SingleChildScrollView(
+
+                child: AnimatedOpacity(
+                  duration: const Duration(milliseconds: 800),
+                  opacity: visible ? 1 : 0,
+
+                  child: AnimatedContainer(
+                    duration: const Duration(milliseconds: 800),
+                    transform: Matrix4.translationValues(
+                      0,
+                      visible ? 0 : 50,
+                      0,
+                    ),
+
+                    child: Padding(
+                      padding: const EdgeInsets.all(20),
+
+                      child: Container(
+
+                        padding: const EdgeInsets.all(25),
+
+                        decoration: BoxDecoration(
+                          color: Colors.white.withOpacity(0.95),
+                          borderRadius: BorderRadius.circular(25),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 15,
+                              offset: const Offset(0, 10),
+                            )
+                          ],
+                        ),
+
+                        child: Form(
+                          key: _formKey,
+
+                          child: Column(
+
+                            mainAxisSize: MainAxisSize.min,
+
+                            children: [
+
+                              Icon(
+                                clienteEditar == null
+                                    ? Icons.person_add
+                                    : Icons.edit,
+                                size: 70,
+                                color: const Color(0xFF2980B9),
+                              ),
+
+                              const SizedBox(height: 15),
+
+                              Text(
+                                clienteEditar == null
+                                    ? "Nuevo Cliente"
+                                    : "Editar Cliente",
+                                style: const TextStyle(
+                                  fontSize: 22,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+
+                              const SizedBox(height: 20),
+
+                              _input("DPI", Icons.badge, dpiController),
+                              const SizedBox(height: 15),
+
+                              _input("Nombre", Icons.person, nombreController),
+                              const SizedBox(height: 15),
+
+                              _input("Email", Icons.email, emailController, email: true),
+                              const SizedBox(height: 15),
+
+                              _input("Teléfono", Icons.phone, telefonoController),
+                              const SizedBox(height: 25),
+
+                              loading
+                                  ? const CircularProgressIndicator()
+                                  : ElevatedButton(
+                                      onPressed: () {
+                                        if (_formKey.currentState!.validate()) {
+                                          if (clienteEditar == null) {
+                                            guardarCliente();
+                                          } else {
+                                            actualizarCliente(clienteEditar!["ID"]);
+                                          }
+                                        }
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        shape: const CircleBorder(),
+                                        padding: const EdgeInsets.all(20),
+                                        backgroundColor: const Color(0xFF2980B9),
+                                      ),
+                                      child: const Icon(Icons.check, color: Colors.white),
+                                    ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // 🧩 INPUT REUTILIZABLE
+  Widget _input(String label, IconData icon, TextEditingController controller, {bool email = false}) {
+
+    return TextFormField(
+      controller: controller,
+      validator: (value) {
+        if (value == null || value.isEmpty) return "Campo obligatorio";
+        if (email && !value.contains("@")) return "Email inválido";
+        return null;
+      },
+      decoration: InputDecoration(
+        labelText: label,
+        prefixIcon: Icon(icon),
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(15),
         ),
       ),
     );

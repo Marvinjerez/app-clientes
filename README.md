@@ -1,214 +1,232 @@
-# app-clientes
-Aplicación para gestionar clientes.
+# 📱 App de Gestión de Clientes
 
- ## Descripción
+Aplicación móvil desarrollada en Flutter que consume una API REST construida en Golang para la gestión de clientes.
+Incluye autenticación mediante JWT y operaciones CRUD completas.
 
- Aplicación móvil desarrollado mediante Flutter que consume un API REST desarrollado en Go para gestionar clientes.
+---
 
- El sistema permite realizar operaciones CRUD:
+## 🧠 Descripción
 
- - Login  
- - Crear clientes
- - Listar clientes
- - Buscar clientes por ID
- - Actualizar clientes
- - Eliminar clientes
+Este sistema implementa una arquitectura cliente-servidor donde una aplicación móvil se comunica con un backend mediante HTTP.
 
-## Tecnologías
+Permite:
 
-Backend
-- Go
-- Gin
-- GORM
-- JWT Auth
-- MySQL
+* Autenticación de usuarios
+* Gestión completa de clientes (CRUD)
+* Consumo de API REST
+* Manejo de sesiones mediante JWT
 
-Frontend
-- Flutter
-- Dart
-- HTTP package
-- Material Design 3
+---
 
-## Estructura del proyecto
+## 🏗️ Arquitectura del sistema
 
+```
+Flutter (Frontend)
+        ↓
+API REST (Golang - Gin)
+        ↓
+Base de Datos (MySQL)
+```
+
+---
+
+## 🚀 Tecnologías
+
+### Backend
+
+* Go
+* Gin
+* GORM
+* JWT Auth
+* MySQL
+
+### Frontend
+
+* Flutter
+* Dart
+* HTTP package
+* Material Design 3
+
+---
+
+## 📂 Estructura del proyecto
+
+### Backend
+
+```
 backend/
-│
 ├── config
 ├── controllers
 ├── migrate
 ├── models
 ├── routes
 └── main.go
+```
 
+### Frontend
+
+```
 frontend/
-│
 ├── pages
 ├── services
 ├── models
 └── main.dart
+```
 
-## Instalación
+---
 
-1. Clonar el repositorio
+## 🔐 Autenticación (JWT)
 
-git clone [https:](https://github.com/Marvinjerez/app-clientes.git)
+El sistema utiliza tokens JWT para proteger los endpoints.
 
-2. Entrar al backend
+Flujo:
 
+1. Usuario inicia sesión en `/login`
+2. El servidor genera un token
+3. El cliente envía el token en cada petición:
+
+```
+Authorization: Bearer <token>
+```
+
+4. Middleware valida el token en cada request
+
+---
+
+## ⚙️ Instalación
+
+### 1. Clonar repositorio
+
+```bash
+git clone https://github.com/Marvinjerez/app-clientes.git
+cd app-clientes
+```
+
+---
+
+### 2. Backend
+
+```bash
 cd backend
-
-3. Instalar dependencias
-
 go mod tidy
+go run main.go
+```
 
-4. Ejecutar servidor
+Servidor:
 
-go run maing.go
+```
+http://localhost:8080
+```
 
-## Ejecutar aplicación de Flutter
+---
 
-1. Entrar al proyecto
+### 3. Frontend
 
+```bash
 cd frontend
-
-2. Instalar dependencias
-
-flutter pug get
-
-3. Ejecutar aplicación
-
+flutter pub get
 flutter run
+```
 
-## API Endpoints
+---
 
-## API Clientes
+## 🔌 API Endpoints
 
-Base URL
+### Base URL
 
-http://localhost:8080/api/v1/clientes
+```
+http://localhost:8080/api/v1
+```
 
-### Obtener todos los clientes
+---
 
-GET /api/v1/clientes
+## 👤 Autenticación
 
-Respuesta
+| Método | Endpoint | Descripción    |
+| ------ | -------- | -------------- |
+| POST   | /login   | Iniciar sesión |
 
-[
- {
-  "ID":1,
-  "Nombre":"Marvin Jenaro",
-  "Email":"correo@email.com",
-  "Telefono":"58784512"
- }
-]
+---
 
-### Obtener cliente por ID
+## 👥 Clientes
 
-GET /api/v1/clientes/{id}
+| Método | Endpoint       | Descripción    |
+| ------ | -------------- | -------------- |
+| GET    | /clientes      | Obtener todos  |
+| GET    | /clientes/{id} | Obtener por ID |
+| POST   | /clientes      | Crear          |
+| PUT    | /clientes/{id} | Actualizar     |
+| DELETE | /clientes/{id} | Eliminar       |
 
-### Crear cliente
+---
 
-POST /api/v1/clientes
+## 👤 Usuarios
 
-Body JSON
+| Método | Endpoint  | Descripción     |
+| ------ | --------- | --------------- |
+| GET    | /usuarios | Listar usuarios |
+| POST   | /usuarios | Crear usuario   |
 
+⚠️ Se recomienda crear usuarios desde herramientas como Postman.
+
+---
+
+## 📥 Ejemplo de request
+
+```json
 {
- "Dpi":"4580751200369",
- "Nombre":"Marvin Jenaro",
- "Email":"correo@email.com",
- "Telefono":"58784512"
+  "Dpi": "4580751200369",
+  "Nombre": "Marvin Jenaro",
+  "Email": "correo@email.com",
+  "Telefono": "58784512"
 }
+```
 
-### Actualizar cliente
+---
 
-PUT /api/v1/clientes/{id}
+## 📤 Respuesta ejemplo
 
-### Eliminar cliente
-
-DELETE /api/v1/clientes/{id}
-
-## API Usuarios
-
-### Obtener todos los usuarios
-
- GET /api/v1/usuarios
-
-Respuesta
-
-[
-  {
-    "ID": 1,
-    "CreatedAt": "0001-01-01T00:00:00Z",
-    "UpdatedAt": "0001-01-01T00:00:00Z",
-    "DeletedAt": null,
-    "Usuario": "mjenaro",
-    "Password": ""
-  }
-]
-
-### Obtener cliente por ID
-
-GET /api/v1/usuarios/{id}
-
-### Crear cliente
-
-POST /api/v1/usuarios
-
-Body JSON
-
+```json
 {
-    "Usuario": "admin",
-    "Password": "12345678"
+  "ID": 1,
+  "Nombre": "Marvin Jenaro",
+  "Email": "correo@email.com",
+  "Telefono": "58784512"
 }
+```
 
-**Para crear un usuario los mejor hacerlo mediante postman directo al API ya que el mismo hace hash a la contraseña**
+---
 
-### Actualizar cliente
-
-PUT /api/v1/usuarios/{id}
-
-### Eliminar usuario
-
-DELETE /api/v1/usuarios/{id}
-
-## Códigos de respuesta HTTP
-
-200 OK  
-Operación exitosa.
-
-201 Created  
-Recurso creado correctamente.
-
-400 Bad Request  
-Datos enviados incorrectos.
-
-404 Not Found  
-El recurso no existe.
-
-500 Internal Server Error  
-Error interno del servidor.
-
-## Funcionalidades
+## 📱 Funcionalidades
 
 ✔ Login de usuarios
-✔ Crear clientes  
-✔ Listar clientes  
-✔ Buscar cliente por ID  
-✔ Editar cliente  
-✔ Eliminar cliente  
-✔ Manejo de errores  
-✔ Recarga automática
+✔ CRUD de clientes
+✔ Consumo de API REST
+✔ Manejo de sesión con JWT
+✔ Validación de formularios
+✔ Manejo de errores
 
-## Manejo de errores
+---
 
-La aplicación maneja errores de:
+## ⚠️ Consideraciones
 
-- Conexión con la API
-- Timeout del servidor
-- Cliente no encontrado
-- Validación de formularios
+* Las contraseñas son procesadas con hash en el backend
+* Se recomienda proteger todos los endpoints en producción
+* Configurar variables de entorno para credenciales
 
-## Autor
+---
+
+## 🔮 Mejoras futuras
+
+* Paginación de clientes
+* Filtros de búsqueda
+* Refresh tokens
+* Logs y monitoreo
+* Dockerización
+
+---
+
+## 👨‍💻 Autor
 
 Marvin Jerez
 Ingeniero en Sistemas

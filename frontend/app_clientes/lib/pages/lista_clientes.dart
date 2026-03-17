@@ -1,22 +1,22 @@
 import 'dart:convert';
 import 'package:app_clientes/config/api.dart';
 import 'package:app_clientes/pages/crear_clientes.dart';
+import 'package:app_clientes/services/auth_service.dart';
 import 'package:flutter/material.dart';
 import 'package:app_clientes/main.dart';
 import 'package:http/http.dart' as http;
 
 class ListaClientes extends StatefulWidget {
-
   static const String ROUTE = "/lista";
 
   @override
   State<ListaClientes> createState() => _ListaClientesState();
-
 }
 
 class _ListaClientesState extends State<ListaClientes> {
 
   List clientes = [];
+  List clientesFiltrados = [];
   bool cargando = true;
 
   final TextEditingController buscarController = TextEditingController();
@@ -24,14 +24,27 @@ class _ListaClientesState extends State<ListaClientes> {
   @override
   void initState() {
     super.initState();
+    validarSesion();
     cargarClientes();
   }
 
+  void validarSesion() async {
+    final auth = AuthService();
+    bool logged = await auth.isLoggedIn();
+
+    if(!logged){
+      Navigator.pushNamedAndRemoveUntil(
+        context,
+        "/login",
+        (route) => false,
+      );
+    }
+  }
+
+  
   Future cargarClientes() async {
 
-    setState(() {
-      cargando = true;
-    });
+    setState(() => cargando = true);
 
     try {
 
@@ -41,173 +54,74 @@ class _ListaClientesState extends State<ListaClientes> {
 
       if(response.statusCode == 200){
 
+        final data = jsonDecode(response.body);
+
         setState(() {
-
-          clientes = jsonDecode(response.body);
+          clientes = data;
+          clientesFiltrados = data;
           cargando = false;
-
         });
 
-      }else{
-
-        throw Exception("Error al cargar clientes");
-
+      } else {
+        throw Exception();
       }
 
     } catch(e){
 
-      setState(() {
-        cargando = false;
-      });
+      setState(() => cargando = false);
 
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(
-          content: Text("Error de conexión con el servidor"),
+          content: Text("Error de conexión"),
           backgroundColor: Colors.red
         )
       );
-
     }
-
   }
 
-  Future buscarClientePorId(String id) async {
-
-    if(id.isEmpty){
-      cargarClientes();
-      return;
-    }
-
-    try {
-
-      final response = await http
-          .get(Uri.parse("${Api.baseUrl}/clientes/$id"))
-          .timeout(const Duration(seconds: 5));
-
-      if(response.statusCode == 200){
-
-        final cliente = jsonDecode(response.body);
-
-        setState(() {
-          clientes = [cliente];
-        });
-
-      }else{
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Cliente no encontrado")
-          )
-        );
-
-      }
-
-    } catch(e){
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Error al buscar cliente")
-        )
-      );
-
-    }
-
-  }
-
+  
   Future eliminarCliente(int id) async {
 
-    try {
-
-      final response = await http.delete(
-        Uri.parse("${Api.baseUrl}/clientes/$id")
-      );
-
-      if(response.statusCode == 200){
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Cliente eliminado"),
-            backgroundColor: Colors.green
-          )
-        );
-
-        cargarClientes();
-
-      }
-
-    } catch(e){
-
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-          content: Text("Error al eliminar cliente"),
-          backgroundColor: Colors.red
-        )
-      );
-
-    }
-
-  }
-
-  void confirmarEliminar(int id){
-
-    showDialog(
-
-      context: context,
-
-      builder: (context){
-
-        return AlertDialog(
-
-          title: const Text("Eliminar cliente"),
-
-          content: const Text("¿Desea eliminar este cliente?"),
-
-          actions: [
-
-            TextButton(
-
-              onPressed: (){
-                Navigator.pop(context);
-              },
-
-              child: const Text("Cancelar"),
-
-            ),
-
-            TextButton(
-
-              onPressed: (){
-
-                eliminarCliente(id);
-                Navigator.pop(context);
-
-              },
-
-              child: const Text(
-                "Eliminar",
-                style: TextStyle(color: Colors.red),
-              ),
-
-            )
-
-          ],
-
-        );
-
-      }
-
+    final response = await http.delete(
+      Uri.parse("${Api.baseUrl}/clientes/$id")
     );
 
+    if(response.statusCode == 200){
+      cargarClientes();
+    }
   }
 
-  void cerrarSesion(){
+  
+  void cerrarSesion() async {
+
+    bool confirmar = await showDialog(
+      context: context,
+      builder: (_) => AlertDialog(
+        title: const Text("Cerrar sesión"),
+        content: const Text("¿Deseas salir de la aplicación?"),
+        actions: [
+          TextButton(
+            onPressed: ()=> Navigator.pop(context, false),
+            child: const Text("Cancelar"),
+          ),
+          TextButton(
+            onPressed: ()=> Navigator.pop(context, true),
+            child: const Text("Salir", style: TextStyle(color: Colors.red)),
+          ),
+        ],
+      ),
+    ) ?? false;
+
+    if(!confirmar) return;
+
+    final auth = AuthService();
+    await auth.logout();
 
     Navigator.pushNamedAndRemoveUntil(
       context,
       "/login",
       (route) => false,
     );
-
   }
 
   @override
@@ -215,316 +129,270 @@ class _ListaClientesState extends State<ListaClientes> {
 
     return Scaffold(
 
-      drawer: Drawer(
+      drawer: _buildDrawer(),
 
-        child: ListView(
+      body: Stack(
+        children: [
 
-          children: [
-
-            const DrawerHeader(
-
-              decoration: BoxDecoration(
-                color: Color.fromARGB(255, 105, 207, 235),
+          
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color(0xFF6DD5FA),
+                  Color(0xFF2980B9),
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
               ),
+            ),
+          ),
 
-              child: Column(
+          SafeArea(
 
-                crossAxisAlignment: CrossAxisAlignment.start,
+            child: Column(
+              children: [
 
-                children: [
+                
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
 
-                  CircleAvatar(
-                    radius: 30,
-                    backgroundColor: Colors.white,
-                    child: Icon(
-                      Icons.person,
-                      size: 35,
-                      color: Color.fromARGB(255, 105, 207, 235),
+                      const Text(
+                        "Clientes",
+                        style: TextStyle(
+                          fontSize: 24,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.white,
+                        ),
+                      ),
+
+                      Row(
+                        children: [
+
+                          
+                          IconButton(
+                            icon: const Icon(Icons.dark_mode, color: Colors.white),
+                            onPressed: (){
+                              MyApp.of(context)?.cambiarTema();
+                            },
+                          ),
+
+                          
+                          IconButton(
+                            icon: const Icon(Icons.refresh, color: Colors.white),
+                            onPressed: cargarClientes,
+                          ),
+
+                          
+                          IconButton(
+                            icon: const Icon(Icons.logout, color: Colors.white),
+                            onPressed: cerrarSesion,
+                          ),
+
+                        ],
+                      )
+                    ],
+                  ),
+                ),
+
+                
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      borderRadius: BorderRadius.circular(15),
+                    ),
+                    child: TextField(
+                      controller: buscarController,
+                      decoration: const InputDecoration(
+                        hintText: "Buscar cliente...",
+                        prefixIcon: Icon(Icons.search),
+                        border: InputBorder.none,
+                      ),
+                      onChanged: (value){
+
+                        final resultado = clientes.where((cliente){
+
+                          final nombre = (cliente["Nombre"] ?? "").toLowerCase();
+                          return nombre.contains(value.toLowerCase());
+
+                        }).toList();
+
+                        setState(() {
+                          clientesFiltrados = resultado;
+                        });
+
+                      },
                     ),
                   ),
+                ),
 
-                  SizedBox(height: 10),
+                const SizedBox(height: 10),
 
-                  Text(
-                    "Usuario",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 18
+              
+                Expanded(
+                  child: cargando
+
+                  ? const Center(child: CircularProgressIndicator())
+
+                  : clientesFiltrados.isEmpty
+
+                  ? _emptyState()
+
+                  : RefreshIndicator(
+                      onRefresh: cargarClientes,
+                      child: ListView.builder(
+                        itemCount: clientesFiltrados.length,
+                        itemBuilder: (context, index){
+
+                          final cliente = clientesFiltrados[index];
+
+                          return _clienteCard(cliente);
+
+                        },
+                      ),
                     ),
-                  )
+                )
 
-                ],
-
-              ),
-
+              ],
             ),
-
-            ListTile(
-
-              leading: const Icon(Icons.people),
-
-              title: const Text("Clientes"),
-
-              onTap: (){
-                Navigator.pop(context);
-              },
-
-            ),
-
-            ListTile(
-
-              leading: const Icon(Icons.dark_mode),
-
-              title: const Text("Cambiar tema"),
-
-              onTap: (){
-
-              MyApp.of(context)?.cambiarTema();
-
-
-              },
-
-            ),
-
-            ListTile(
-
-              leading: const Icon(Icons.logout,color: Colors.red),
-
-              title: const Text("Cerrar sesión"),
-
-              onTap: cerrarSesion,
-
-            ),
-
-          ],
-
-        ),
-
-      ),
-
-      appBar: AppBar(
-        title: const Text("Listado de clientes"),
-        backgroundColor: Color.fromARGB(255, 105, 207, 235),
+          ),
+        ],
       ),
 
       floatingActionButton: FloatingActionButton(
-
-        backgroundColor: Color.fromARGB(255, 105, 207, 235),
-
+        backgroundColor: const Color(0xFF2980B9),
         child: const Icon(Icons.add),
-
         onPressed: (){
-
           Navigator.pushNamed(context, CrearCliente.ROUTE)
           .then((value){
-
-            if(value == true){
-              cargarClientes();
-            }
-
+            if(value == true) cargarClientes();
           });
-
         },
-
       ),
-
-      body: cargando
-
-      ? const Center(child: CircularProgressIndicator())
-
-      : Column(
-
-        children: [
-
-          Padding(
-
-            padding: const EdgeInsets.all(10),
-
-            child: TextField(
-
-              controller: buscarController,
-
-              keyboardType: TextInputType.number,
-
-              decoration: InputDecoration(
-
-                labelText: "Buscar cliente por ID",
-
-                prefixIcon: const Icon(Icons.search),
-
-                suffixIcon: IconButton(
-
-                  icon: const Icon(Icons.clear),
-
-                  onPressed: (){
-
-                    buscarController.clear();
-                    cargarClientes();
-
-                  },
-
-                ),
-
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10)
-                ),
-
-              ),
-
-              onChanged: (value){
-
-                if(value.isEmpty){
-                  cargarClientes();
-                }
-
-              },
-
-              onSubmitted: (value){
-                buscarClientePorId(value);
-              },
-
-            ),
-
-          ),
-
-          Expanded(
-
-            child: RefreshIndicator(
-
-              onRefresh: cargarClientes,
-
-              child: ListView.builder(
-
-                itemCount: clientes.length,
-
-                itemBuilder: (context,index){
-
-                  final cliente = clientes[index];
-
-                  final inicial = cliente["Nombre"] != null
-                      ? cliente["Nombre"][0].toUpperCase()
-                      : "?";
-
-                  return Card(
-
-                    margin: const EdgeInsets.symmetric(
-                      horizontal: 12,
-                      vertical: 6
-                    ),
-
-                    elevation: 3,
-
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12)
-                    ),
-
-                    child: ListTile(
-
-                      contentPadding: const EdgeInsets.all(12),
-
-                      leading: CircleAvatar(
-
-                        radius: 25,
-
-                        backgroundColor: Color.fromARGB(255, 105, 207, 235),
-
-                        child: Text(
-                          inicial,
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 18,
-                            fontWeight: FontWeight.bold
-                          ),
-                        ),
-
-                      ),
-
-                      title: Text(
-                        cliente["Nombre"] ?? "Sin nombre",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold
-                        ),
-                      ),
-
-                      subtitle: Column(
-
-                        crossAxisAlignment: CrossAxisAlignment.start,
-
-                        children: [
-
-                          Text("ID: ${cliente["ID"]}"),
-                          Text(cliente["Email"] ?? "")
-
-                        ],
-
-                      ),
-
-                      trailing: Row(
-
-                        mainAxisSize: MainAxisSize.min,
-
-                        children: [
-
-                          IconButton(
-
-                            icon: const Icon(
-                              Icons.edit,
-                              color: Colors.blue
-                            ),
-
-                            onPressed: (){
-
-                              Navigator.pushNamed(
-                                context,
-                                CrearCliente.ROUTE,
-                                arguments: cliente
-                              ).then((value){
-
-                                if(value == true){
-                                  cargarClientes();
-                                }
-
-                              });
-
-                            },
-
-                          ),
-
-                          IconButton(
-
-                            icon: const Icon(
-                              Icons.delete,
-                              color: Colors.red
-                            ),
-
-                            onPressed: (){
-                              confirmarEliminar(cliente["ID"]);
-                            },
-
-                          )
-
-                        ],
-
-                      ),
-
-                    ),
-
-                  );
-
-                }
-
-              ),
-
-            ),
-
-          )
-
-        ],
-
-      ),
-
     );
-
   }
 
+  Widget _clienteCard(cliente){
+
+    return Dismissible(
+
+      key: Key(cliente["ID"].toString()),
+      direction: DismissDirection.endToStart,
+
+      background: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.red,
+          borderRadius: BorderRadius.circular(15),
+        ),
+        alignment: Alignment.centerRight,
+        padding: const EdgeInsets.only(right: 20),
+        child: const Icon(Icons.delete, color: Colors.white),
+      ),
+
+      confirmDismiss: (_) async {
+        return await showDialog(
+          context: context,
+          builder: (_) => AlertDialog(
+            title: const Text("Eliminar"),
+            content: const Text("¿Seguro que deseas eliminar?"),
+            actions: [
+              TextButton(onPressed: ()=> Navigator.pop(context, false), child: const Text("No")),
+              TextButton(onPressed: ()=> Navigator.pop(context, true), child: const Text("Sí", style: TextStyle(color: Colors.red))),
+            ],
+          ),
+        );
+      },
+
+      onDismissed: (_) => eliminarCliente(cliente["ID"]),
+
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(15),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.1),
+              blurRadius: 10,
+            )
+          ],
+        ),
+
+        child: ListTile(
+          leading: const CircleAvatar(
+            backgroundColor: Color(0xFF2980B9),
+            child: Icon(Icons.person, color: Colors.white),
+          ),
+          title: Text(cliente["Nombre"] ?? ""),
+          subtitle: Text(cliente["Email"] ?? ""),
+          trailing: IconButton(
+            icon: const Icon(Icons.edit, color: Colors.blue),
+            onPressed: (){
+              Navigator.pushNamed(
+                context,
+                CrearCliente.ROUTE,
+                arguments: cliente
+              ).then((value){
+                if(value == true) cargarClientes();
+              });
+            },
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyState(){
+    return const Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.people_outline, size: 90, color: Colors.white70),
+          SizedBox(height: 10),
+          Text(
+            "No hay clientes",
+            style: TextStyle(color: Colors.white, fontSize: 18),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildDrawer(){
+    return Drawer(
+      child: ListView(
+        children: [
+
+          const DrawerHeader(
+            decoration: BoxDecoration(
+              gradient: LinearGradient(
+                colors: [Color(0xFF6DD5FA), Color(0xFF2980B9)],
+              ),
+            ),
+            child: Text("Menú", style: TextStyle(color: Colors.white)),
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.dark_mode),
+            title: const Text("Cambiar tema"),
+            onTap: (){
+              MyApp.of(context)?.cambiarTema();
+            },
+          ),
+
+          ListTile(
+            leading: const Icon(Icons.logout, color: Colors.red),
+            title: const Text("Cerrar sesión"),
+            onTap: cerrarSesion,
+          ),
+        ],
+      ),
+    );
+  }
 }

@@ -1,32 +1,32 @@
 import 'package:flutter/material.dart';
 import '../services/auth_service.dart';
-import 'lista_clientes.dart';
 
-class Login extends StatefulWidget {
-  const Login({super.key});
+class Registrar extends StatefulWidget {
+  const Registrar({super.key});
 
-  static const String ROUTE = "/login";
+  static const String ROUTE = "/registrar";
 
   @override
-  State<Login> createState() => _LoginState();
+  State<Registrar> createState() => _RegistrarState();
 }
 
-class _LoginState extends State<Login> {
+class _RegistrarState extends State<Registrar> {
 
-  final usuarioController = TextEditingController();
-  final passwordController = TextEditingController();
   final AuthService authService = AuthService();
+  final usuarioController = TextEditingController();
+  final emailController = TextEditingController();
+  final passwordController = TextEditingController();
+  final confirmPasswordController = TextEditingController();
+
+  final _formKey = GlobalKey<FormState>();
 
   bool loading = false;
   bool visible = false;
-
-  final _formKey = GlobalKey<FormState>();
 
   @override
   void initState() {
     super.initState();
 
-    // 🔥 Animación al cargar
     Future.delayed(const Duration(milliseconds: 200), (){
       setState(() {
         visible = true;
@@ -34,53 +34,52 @@ class _LoginState extends State<Login> {
     });
   }
 
-  void checkLogin() async {
-
-  bool logged = await authService.isLoggedIn();
-
-  if(logged){
-    Navigator.pushReplacementNamed(context, "/lista");
-  }
-}
-
-  void login() async {
+  void registrar() async {
 
     if (!_formKey.currentState!.validate()) return;
 
-    setState(() => loading = true);
-
-    bool success = await authService.login(
-      usuarioController.text,
-      passwordController.text,
-    );
-
-    setState(() => loading = false);
-
-    if (success) {
-
-      Navigator.pushReplacement(
-        context,
-        PageRouteBuilder(
-          transitionDuration: const Duration(milliseconds: 500),
-          pageBuilder: (_, __, ___) => ListaClientes(),
-          transitionsBuilder: (_, animation, __, child) {
-            return FadeTransition(
-              opacity: animation,
-              child: child,
-            );
-          },
+    if (passwordController.text != confirmPasswordController.text) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Las contraseñas no coinciden"),
+          backgroundColor: Colors.red,
         ),
       );
+      return;
+    }
 
-    } else {
+    setState(() => loading = true);
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text("Credenciales incorrectas"),
-            backgroundColor: Colors.redAccent,
-          ),
-        );
-      }
+    bool success = await authService.register(
+  usuarioController.text,
+  emailController.text,
+  passwordController.text
+);
+
+setState(() => loading = false);
+
+if(success){
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text("Usuario registrado correctamente"),
+      backgroundColor: Colors.green,
+    ),
+  );
+
+  Navigator.pop(context);
+
+}else{
+
+  ScaffoldMessenger.of(context).showSnackBar(
+    const SnackBar(
+      content: Text("Error al registrar usuario"),
+      backgroundColor: Colors.red,
+    ),
+  );
+
+}
+
   }
 
   @override
@@ -92,7 +91,6 @@ class _LoginState extends State<Login> {
 
         children: [
 
-          // 🌈 FONDO GRADIENTE
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -106,7 +104,6 @@ class _LoginState extends State<Login> {
             ),
           ),
 
-          // 🔥 CONTENIDO ANIMADO
           Center(
 
             child: SingleChildScrollView(
@@ -151,29 +148,25 @@ class _LoginState extends State<Login> {
 
                           children: [
 
-                            // 🔐 ICONO CON HERO
-                            const Hero(
-                              tag: "logo",
-                              child: Icon(
-                                Icons.lock,
-                                size: 80,
-                                color: Color(0xFF2980B9),
-                              ),
+                            const Icon(
+                              Icons.person_add,
+                              size: 80,
+                              color: Color(0xFF2980B9),
                             ),
 
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 15),
 
                             const Text(
-                              "Bienvenido",
+                              "Crear Cuenta",
                               style: TextStyle(
                                 fontSize: 22,
                                 fontWeight: FontWeight.bold,
                               ),
                             ),
 
-                            const SizedBox(height: 25),
+                            const SizedBox(height: 20),
 
-                            // 👤 USUARIO
+                            
                             TextFormField(
                               controller: usuarioController,
                               decoration: InputDecoration(
@@ -185,13 +178,36 @@ class _LoginState extends State<Login> {
                               ),
                               validator: (value) =>
                                   (value == null || value.isEmpty)
-                                      ? "Ingrese el usuario"
+                                      ? "Ingrese usuario"
                                       : null,
                             ),
 
                             const SizedBox(height: 15),
 
-                            // 🔒 PASSWORD
+                            
+                            TextFormField(
+                              controller: emailController,
+                              decoration: InputDecoration(
+                                labelText: "Email",
+                                prefixIcon: const Icon(Icons.email),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              validator: (value) {
+                                if (value == null || value.isEmpty) {
+                                  return "Ingrese email";
+                                }
+                                if (!value.contains("@")) {
+                                  return "Email inválido";
+                                }
+                                return null;
+                              },
+                            ),
+
+                            const SizedBox(height: 15),
+
+                            
                             TextFormField(
                               controller: passwordController,
                               obscureText: true,
@@ -203,20 +219,37 @@ class _LoginState extends State<Login> {
                                 ),
                               ),
                               validator: (value) =>
+                                  (value == null || value.length < 4)
+                                      ? "Mínimo 4 caracteres"
+                                      : null,
+                            ),
+
+                            const SizedBox(height: 15),
+
+                            
+                            TextFormField(
+                              controller: confirmPasswordController,
+                              obscureText: true,
+                              decoration: InputDecoration(
+                                labelText: "Confirmar contraseña",
+                                prefixIcon: const Icon(Icons.lock_outline),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(15),
+                                ),
+                              ),
+                              validator: (value) =>
                                   (value == null || value.isEmpty)
-                                      ? "Ingrese la contraseña"
+                                      ? "Confirme la contraseña"
                                       : null,
                             ),
 
                             const SizedBox(height: 25),
 
-                            // 🔘 BOTÓN CIRCULAR
+                            
                             loading
-
                                 ? const CircularProgressIndicator()
-
                                 : ElevatedButton(
-                                    onPressed: login,
+                                    onPressed: registrar,
                                     style: ElevatedButton.styleFrom(
                                       shape: const CircleBorder(),
                                       padding: const EdgeInsets.all(20),
@@ -224,25 +257,20 @@ class _LoginState extends State<Login> {
                                       elevation: 5,
                                     ),
                                     child: const Icon(
-                                      Icons.arrow_forward,
+                                      Icons.check,
                                       size: 28,
                                       color: Colors.white,
                                     ),
                                   ),
 
-                            const SizedBox(height: 20),
+                            const SizedBox(height: 15),
 
-                            // Registrar
+                            
                             TextButton(
                               onPressed: (){
-                                Navigator.pushNamed(context, "/registrar");
+                                Navigator.pop(context);
                               },
-                              child: const Text(
-                                "¿No tienes cuenta? Regístrate",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                ),
-                              ),
+                              child: const Text("¿Ya tienes cuenta? Inicia sesión"),
                             )
 
                           ],
