@@ -84,7 +84,6 @@ class _CrearClienteState extends State<CrearCliente> {
     return Scaffold(
       body: Stack(
         children: [
-          // 🌈 FONDO
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -203,7 +202,6 @@ class _CrearClienteState extends State<CrearCliente> {
     );
   }
 
-  // 🧩 INPUT REUTILIZABLE
   Widget _input(String label, IconData icon, TextEditingController controller,
       {bool email = false}) {
     return TextFormField(

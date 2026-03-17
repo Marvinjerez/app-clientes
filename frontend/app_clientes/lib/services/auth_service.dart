@@ -6,7 +6,7 @@ class AuthService {
 
   final String baseUrl = "http://10.0.2.2:8080/api/v1";
 
-  // 🔐 LOGIN
+  // LOGIN
   Future<bool> login(String usuario, String password) async {
 
     final url = Uri.parse("$baseUrl/login");
@@ -41,7 +41,7 @@ class AuthService {
     }
   }
 
-  // 📝 REGISTER
+  // registrar
   Future<bool> register(String usuario, String email, String password) async {
 
     final url = Uri.parse("$baseUrl/usuarios");
@@ -65,19 +65,19 @@ class AuthService {
     }
   }
 
-  // 🔍 VALIDAR SESIÓN
+  // VALIDAR SESIÓN
   Future<bool> isLoggedIn() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString("token") != null;
   }
 
-  // 🚪 LOGOUT REAL
+  // LOGOUT REAL
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove("token");
   }
 
-  // 🔑 TOKEN
+  // TOKEN
   Future<String?> getToken() async {
     final prefs = await SharedPreferences.getInstance();
     return prefs.getString("token");

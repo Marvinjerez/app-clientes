@@ -155,21 +155,13 @@ class _ListaClientesState extends State<ListaClientes> {
                       Row(
                         children: [
 
-                          // 🌙 CAMBIAR TEMA
-                          IconButton(
-                            icon: const Icon(Icons.dark_mode, color: Colors.white),
-                            onPressed: (){
-                              MyApp.of(context)?.cambiarTema();
-                            },
-                          ),
-
-                          // 🔄 REFRESH
+                          // REFRESH
                           IconButton(
                             icon: const Icon(Icons.refresh, color: Colors.white),
                             onPressed: cargarClientes,
                           ),
 
-                          // 🚪 LOGOUT
+                          // LOGOUT
                           IconButton(
                             icon: const Icon(Icons.logout, color: Colors.white),
                             onPressed: cerrarSesion,
@@ -182,7 +174,7 @@ class _ListaClientesState extends State<ListaClientes> {
                   ),
                 ),
 
-                // 🔍 BUSCADOR
+                //  BUSCADOR
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
 

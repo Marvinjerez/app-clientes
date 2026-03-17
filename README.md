@@ -208,24 +208,6 @@ http://localhost:8080/api/v1
 
 ---
 
-## ⚠️ Consideraciones
-
-* Las contraseñas son procesadas con hash en el backend
-* Se recomienda proteger todos los endpoints en producción
-* Configurar variables de entorno para credenciales
-
----
-
-## 🔮 Mejoras futuras
-
-* Paginación de clientes
-* Filtros de búsqueda
-* Refresh tokens
-* Logs y monitoreo
-* Dockerización
-
----
-
 ## 👨‍💻 Autor
 
 Marvin Jerez
