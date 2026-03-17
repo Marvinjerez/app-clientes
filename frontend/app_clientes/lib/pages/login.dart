@@ -26,7 +26,6 @@ class _LoginState extends State<Login> {
   void initState() {
     super.initState();
 
-    // 🔥 Animación al cargar
     Future.delayed(const Duration(milliseconds: 200), (){
       setState(() {
         visible = true;
@@ -92,7 +91,6 @@ class _LoginState extends State<Login> {
 
         children: [
 
-          // 🌈 FONDO GRADIENTE
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -106,7 +104,6 @@ class _LoginState extends State<Login> {
             ),
           ),
 
-          // 🔥 CONTENIDO ANIMADO
           Center(
 
             child: SingleChildScrollView(
@@ -151,7 +148,6 @@ class _LoginState extends State<Login> {
 
                           children: [
 
-                            // 🔐 ICONO CON HERO
                             const Hero(
                               tag: "logo",
                               child: Icon(
@@ -173,7 +169,6 @@ class _LoginState extends State<Login> {
 
                             const SizedBox(height: 25),
 
-                            // 👤 USUARIO
                             TextFormField(
                               controller: usuarioController,
                               decoration: InputDecoration(
@@ -191,7 +186,6 @@ class _LoginState extends State<Login> {
 
                             const SizedBox(height: 15),
 
-                            // 🔒 PASSWORD
                             TextFormField(
                               controller: passwordController,
                               obscureText: true,
@@ -210,7 +204,6 @@ class _LoginState extends State<Login> {
 
                             const SizedBox(height: 25),
 
-                            // 🔘 BOTÓN CIRCULAR
                             loading
 
                                 ? const CircularProgressIndicator()
@@ -232,7 +225,6 @@ class _LoginState extends State<Login> {
 
                             const SizedBox(height: 20),
 
-                            // Registrar
                             TextButton(
                               onPressed: (){
                                 Navigator.pushNamed(context, "/registrar");

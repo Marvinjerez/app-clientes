@@ -11,7 +11,6 @@ class CrearCliente extends StatefulWidget {
 }
 
 class _CrearClienteState extends State<CrearCliente> {
-
   final _formKey = GlobalKey<FormState>();
 
   final dpiController = TextEditingController();
@@ -20,7 +19,6 @@ class _CrearClienteState extends State<CrearCliente> {
   final telefonoController = TextEditingController();
 
   Map? clienteEditar;
-
   bool loading = false;
   bool visible = false;
 
@@ -28,7 +26,7 @@ class _CrearClienteState extends State<CrearCliente> {
   void initState() {
     super.initState();
 
-    Future.delayed(const Duration(milliseconds: 200), (){
+    Future.delayed(const Duration(milliseconds: 200), () {
       setState(() => visible = true);
     });
 
@@ -46,9 +44,7 @@ class _CrearClienteState extends State<CrearCliente> {
   }
 
   Future guardarCliente() async {
-
     setState(() => loading = true);
-
     final response = await http.post(
       Uri.parse("${Api.baseUrl}/clientes"),
       headers: {"Content-Type": "application/json"},
@@ -59,18 +55,14 @@ class _CrearClienteState extends State<CrearCliente> {
         "telefono": telefonoController.text
       }),
     );
-
     setState(() => loading = false);
-
     if (response.statusCode == 200) {
       Navigator.pop(context, true);
     }
   }
 
   Future actualizarCliente(int id) async {
-
     setState(() => loading = true);
-
     final response = await http.put(
       Uri.parse("${Api.baseUrl}/clientes/$id"),
       headers: {"Content-Type": "application/json"},
@@ -81,9 +73,7 @@ class _CrearClienteState extends State<CrearCliente> {
         "telefono": telefonoController.text
       }),
     );
-
     setState(() => loading = false);
-
     if (response.statusCode == 200) {
       Navigator.pop(context, true);
     }
@@ -91,12 +81,9 @@ class _CrearClienteState extends State<CrearCliente> {
 
   @override
   Widget build(BuildContext context) {
-
     return Scaffold(
-
       body: Stack(
         children: [
-
           // 🌈 FONDO
           Container(
             decoration: const BoxDecoration(
@@ -110,32 +97,19 @@ class _CrearClienteState extends State<CrearCliente> {
               ),
             ),
           ),
-
           SafeArea(
-
             child: Center(
-
               child: SingleChildScrollView(
-
                 child: AnimatedOpacity(
                   duration: const Duration(milliseconds: 800),
                   opacity: visible ? 1 : 0,
-
                   child: AnimatedContainer(
                     duration: const Duration(milliseconds: 800),
-                    transform: Matrix4.translationValues(
-                      0,
-                      visible ? 0 : 50,
-                      0,
-                    ),
-
+                    transform: Matrix4.translationValues(0, visible ? 0 : 50, 0),
                     child: Padding(
                       padding: const EdgeInsets.all(20),
-
                       child: Container(
-
                         padding: const EdgeInsets.all(25),
-
                         decoration: BoxDecoration(
                           color: Colors.white.withOpacity(0.95),
                           borderRadius: BorderRadius.circular(25),
@@ -147,26 +121,22 @@ class _CrearClienteState extends State<CrearCliente> {
                             )
                           ],
                         ),
-
                         child: Form(
                           key: _formKey,
-
                           child: Column(
-
                             mainAxisSize: MainAxisSize.min,
-
                             children: [
-
-                              Icon(
-                                clienteEditar == null
-                                    ? Icons.person_add
-                                    : Icons.edit,
-                                size: 70,
-                                color: const Color(0xFF2980B9),
+                              Hero(
+                                tag: "fabCliente",
+                                child: Icon(
+                                  clienteEditar == null
+                                      ? Icons.person_add
+                                      : Icons.edit,
+                                  size: 70,
+                                  color: const Color(0xFF2980B9),
+                                ),
                               ),
-
                               const SizedBox(height: 15),
-
                               Text(
                                 clienteEditar == null
                                     ? "Nuevo Cliente"
@@ -176,40 +146,48 @@ class _CrearClienteState extends State<CrearCliente> {
                                   fontWeight: FontWeight.bold,
                                 ),
                               ),
-
                               const SizedBox(height: 20),
-
                               _input("DPI", Icons.badge, dpiController),
                               const SizedBox(height: 15),
-
                               _input("Nombre", Icons.person, nombreController),
                               const SizedBox(height: 15),
-
-                              _input("Email", Icons.email, emailController, email: true),
+                              _input("Email", Icons.email, emailController,
+                                  email: true),
                               const SizedBox(height: 15),
-
                               _input("Teléfono", Icons.phone, telefonoController),
                               const SizedBox(height: 25),
-
-                              loading
-                                  ? const CircularProgressIndicator()
-                                  : ElevatedButton(
-                                      onPressed: () {
-                                        if (_formKey.currentState!.validate()) {
-                                          if (clienteEditar == null) {
-                                            guardarCliente();
-                                          } else {
-                                            actualizarCliente(clienteEditar!["ID"]);
-                                          }
-                                        }
-                                      },
-                                      style: ElevatedButton.styleFrom(
-                                        shape: const CircleBorder(),
-                                        padding: const EdgeInsets.all(20),
-                                        backgroundColor: const Color(0xFF2980B9),
-                                      ),
-                                      child: const Icon(Icons.check, color: Colors.white),
-                                    ),
+                              ElevatedButton(
+                                onPressed: () {
+                                  if (_formKey.currentState!.validate()) {
+                                    if (clienteEditar == null) {
+                                      guardarCliente();
+                                    } else {
+                                      actualizarCliente(clienteEditar!["ID"]);
+                                    }
+                                  }
+                                },
+                                style: ElevatedButton.styleFrom(
+                                  shape: const CircleBorder(),
+                                  padding: const EdgeInsets.all(20),
+                                  backgroundColor: const Color(0xFF2980B9),
+                                ),
+                                child: AnimatedSwitcher(
+                                  duration: const Duration(milliseconds: 300),
+                                  child: loading
+                                      ? const SizedBox(
+                                          key: ValueKey("loading"),
+                                          width: 24,
+                                          height: 24,
+                                          child: CircularProgressIndicator(
+                                              color: Colors.white),
+                                        )
+                                      : const Icon(
+                                          Icons.check,
+                                          key: ValueKey("icon"),
+                                          color: Colors.white,
+                                        ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
@@ -226,8 +204,8 @@ class _CrearClienteState extends State<CrearCliente> {
   }
 
   // 🧩 INPUT REUTILIZABLE
-  Widget _input(String label, IconData icon, TextEditingController controller, {bool email = false}) {
-
+  Widget _input(String label, IconData icon, TextEditingController controller,
+      {bool email = false}) {
     return TextFormField(
       controller: controller,
       validator: (value) {

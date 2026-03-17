@@ -9,6 +9,8 @@ import 'package:http/http.dart' as http;
 class ListaClientes extends StatefulWidget {
   static const String ROUTE = "/lista";
 
+  const ListaClientes({super.key});
+
   @override
   State<ListaClientes> createState() => _ListaClientesState();
 }
@@ -32,7 +34,9 @@ class _ListaClientesState extends State<ListaClientes> {
     final auth = AuthService();
     bool logged = await auth.isLoggedIn();
 
-    if(!logged){
+    if (!mounted) return;
+
+    if (!logged) {
       Navigator.pushNamedAndRemoveUntil(
         context,
         "/login",
@@ -41,7 +45,6 @@ class _ListaClientesState extends State<ListaClientes> {
     }
   }
 
-  
   Future cargarClientes() async {
 
     setState(() => cargando = true);
@@ -79,7 +82,6 @@ class _ListaClientesState extends State<ListaClientes> {
     }
   }
 
-  
   Future eliminarCliente(int id) async {
 
     final response = await http.delete(
@@ -91,28 +93,7 @@ class _ListaClientesState extends State<ListaClientes> {
     }
   }
 
-  
   void cerrarSesion() async {
-
-    bool confirmar = await showDialog(
-      context: context,
-      builder: (_) => AlertDialog(
-        title: const Text("Cerrar sesión"),
-        content: const Text("¿Deseas salir de la aplicación?"),
-        actions: [
-          TextButton(
-            onPressed: ()=> Navigator.pop(context, false),
-            child: const Text("Cancelar"),
-          ),
-          TextButton(
-            onPressed: ()=> Navigator.pop(context, true),
-            child: const Text("Salir", style: TextStyle(color: Colors.red)),
-          ),
-        ],
-      ),
-    ) ?? false;
-
-    if(!confirmar) return;
 
     final auth = AuthService();
     await auth.logout();
@@ -129,12 +110,11 @@ class _ListaClientesState extends State<ListaClientes> {
 
     return Scaffold(
 
-      drawer: _buildDrawer(),
-
       body: Stack(
+
         children: [
 
-          
+          // 🌈 FONDO
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -151,13 +131,16 @@ class _ListaClientesState extends State<ListaClientes> {
           SafeArea(
 
             child: Column(
+
               children: [
 
-                
+                // 🔷 HEADER CON BOTONES
                 Padding(
                   padding: const EdgeInsets.all(16),
+
                   child: Row(
                     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+
                     children: [
 
                       const Text(
@@ -172,7 +155,7 @@ class _ListaClientesState extends State<ListaClientes> {
                       Row(
                         children: [
 
-                          
+                          // 🌙 CAMBIAR TEMA
                           IconButton(
                             icon: const Icon(Icons.dark_mode, color: Colors.white),
                             onPressed: (){
@@ -180,13 +163,13 @@ class _ListaClientesState extends State<ListaClientes> {
                             },
                           ),
 
-                          
+                          // 🔄 REFRESH
                           IconButton(
                             icon: const Icon(Icons.refresh, color: Colors.white),
                             onPressed: cargarClientes,
                           ),
 
-                          
+                          // 🚪 LOGOUT
                           IconButton(
                             icon: const Icon(Icons.logout, color: Colors.white),
                             onPressed: cerrarSesion,
@@ -194,30 +177,36 @@ class _ListaClientesState extends State<ListaClientes> {
 
                         ],
                       )
+
                     ],
                   ),
                 ),
 
-                
+                // 🔍 BUSCADOR
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16),
+
                   child: Container(
                     decoration: BoxDecoration(
                       color: Colors.white,
                       borderRadius: BorderRadius.circular(15),
                     ),
+
                     child: TextField(
                       controller: buscarController,
+
                       decoration: const InputDecoration(
                         hintText: "Buscar cliente...",
                         prefixIcon: Icon(Icons.search),
                         border: InputBorder.none,
                       ),
+
                       onChanged: (value){
 
                         final resultado = clientes.where((cliente){
 
                           final nombre = (cliente["Nombre"] ?? "").toLowerCase();
+
                           return nombre.contains(value.toLowerCase());
 
                         }).toList();
@@ -233,8 +222,9 @@ class _ListaClientesState extends State<ListaClientes> {
 
                 const SizedBox(height: 10),
 
-              
+                // LISTA
                 Expanded(
+
                   child: cargando
 
                   ? const Center(child: CircularProgressIndicator())
@@ -244,37 +234,83 @@ class _ListaClientesState extends State<ListaClientes> {
                   ? _emptyState()
 
                   : RefreshIndicator(
+
+                      color: Colors.white,
+                      backgroundColor: const Color(0xFF2980B9),
+
                       onRefresh: cargarClientes,
+
                       child: ListView.builder(
+
                         itemCount: clientesFiltrados.length,
-                        itemBuilder: (context, index){
+
+                        itemBuilder: (context,index){
 
                           final cliente = clientesFiltrados[index];
 
                           return _clienteCard(cliente);
 
                         },
+
                       ),
                     ),
+
                 )
 
               ],
+
             ),
-          ),
+
+          )
+
         ],
+
       ),
 
       floatingActionButton: FloatingActionButton(
+
+        heroTag: "fabCliente",
+
         backgroundColor: const Color(0xFF2980B9),
+
         child: const Icon(Icons.add),
+
         onPressed: (){
-          Navigator.pushNamed(context, CrearCliente.ROUTE)
-          .then((value){
-            if(value == true) cargarClientes();
+
+          Navigator.push(
+            context,
+
+            PageRouteBuilder(
+
+              transitionDuration: const Duration(milliseconds: 300),
+
+              pageBuilder: (_,__,___) => CrearCliente(),
+
+              transitionsBuilder: (_,animation,__,child){
+
+                return FadeTransition(
+                  opacity: animation,
+                  child: child,
+                );
+
+              }
+
+            )
+
+          ).then((value){
+
+            if(value == true){
+              cargarClientes();
+            }
+
           });
+
         },
+
       ),
+
     );
+
   }
 
   Widget _clienteCard(cliente){
@@ -282,40 +318,79 @@ class _ListaClientesState extends State<ListaClientes> {
     return Dismissible(
 
       key: Key(cliente["ID"].toString()),
+
       direction: DismissDirection.endToStart,
 
       background: Container(
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+
         decoration: BoxDecoration(
           color: Colors.red,
           borderRadius: BorderRadius.circular(15),
         ),
+
         alignment: Alignment.centerRight,
+
         padding: const EdgeInsets.only(right: 20),
-        child: const Icon(Icons.delete, color: Colors.white),
+
+        child: const Icon(Icons.delete,color: Colors.white),
       ),
 
       confirmDismiss: (_) async {
+
         return await showDialog(
+
           context: context,
-          builder: (_) => AlertDialog(
+
+          builder: (_)=>AlertDialog(
+
             title: const Text("Eliminar"),
+
             content: const Text("¿Seguro que deseas eliminar?"),
+
             actions: [
-              TextButton(onPressed: ()=> Navigator.pop(context, false), child: const Text("No")),
-              TextButton(onPressed: ()=> Navigator.pop(context, true), child: const Text("Sí", style: TextStyle(color: Colors.red))),
+
+              TextButton(
+                onPressed: ()=>Navigator.pop(context,false),
+                child: const Text("No"),
+              ),
+
+              TextButton(
+                onPressed: ()=>Navigator.pop(context,true),
+                child: const Text("Sí",style: TextStyle(color: Colors.red)),
+              ),
+
             ],
-          ),
+
+          )
+
         );
+
       },
 
-      onDismissed: (_) => eliminarCliente(cliente["ID"]),
+      onDismissed: (_){
+
+        eliminarCliente(cliente["ID"]);
+
+        ScaffoldMessenger.of(context).showSnackBar(
+
+          SnackBar(
+            content: Text("${cliente["Nombre"]} eliminado"),
+            duration: const Duration(seconds: 2),
+          ),
+
+        );
+
+      },
 
       child: Container(
+
         margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
+
         decoration: BoxDecoration(
           color: Colors.white,
           borderRadius: BorderRadius.circular(15),
+
           boxShadow: [
             BoxShadow(
               color: Colors.black.withOpacity(0.1),
@@ -325,74 +400,71 @@ class _ListaClientesState extends State<ListaClientes> {
         ),
 
         child: ListTile(
+
           leading: const CircleAvatar(
             backgroundColor: Color(0xFF2980B9),
-            child: Icon(Icons.person, color: Colors.white),
+            child: Icon(Icons.person,color: Colors.white),
           ),
+
           title: Text(cliente["Nombre"] ?? ""),
+
           subtitle: Text(cliente["Email"] ?? ""),
+
           trailing: IconButton(
-            icon: const Icon(Icons.edit, color: Colors.blue),
+
+            icon: const Icon(Icons.edit,color: Colors.blue),
+
             onPressed: (){
+
               Navigator.pushNamed(
                 context,
                 CrearCliente.ROUTE,
-                arguments: cliente
+                arguments: cliente,
               ).then((value){
-                if(value == true) cargarClientes();
+
+                if(value == true){
+                  cargarClientes();
+                }
+
               });
+
             },
+
           ),
+
         ),
+
       ),
+
     );
+
   }
 
   Widget _emptyState(){
+
     return const Center(
+
       child: Column(
+
         mainAxisAlignment: MainAxisAlignment.center,
+
         children: [
-          Icon(Icons.people_outline, size: 90, color: Colors.white70),
+
+          Icon(Icons.people_outline,size: 90,color: Colors.white70),
+
           SizedBox(height: 10),
+
           Text(
             "No hay clientes",
-            style: TextStyle(color: Colors.white, fontSize: 18),
+            style: TextStyle(color: Colors.white,fontSize: 18),
           ),
+
         ],
+
       ),
+
     );
+
   }
 
-  Widget _buildDrawer(){
-    return Drawer(
-      child: ListView(
-        children: [
-
-          const DrawerHeader(
-            decoration: BoxDecoration(
-              gradient: LinearGradient(
-                colors: [Color(0xFF6DD5FA), Color(0xFF2980B9)],
-              ),
-            ),
-            child: Text("Menú", style: TextStyle(color: Colors.white)),
-          ),
-
-          ListTile(
-            leading: const Icon(Icons.dark_mode),
-            title: const Text("Cambiar tema"),
-            onTap: (){
-              MyApp.of(context)?.cambiarTema();
-            },
-          ),
-
-          ListTile(
-            leading: const Icon(Icons.logout, color: Colors.red),
-            title: const Text("Cerrar sesión"),
-            onTap: cerrarSesion,
-          ),
-        ],
-      ),
-    );
-  }
 }
