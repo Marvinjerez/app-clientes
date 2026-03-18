@@ -3,7 +3,6 @@ import 'package:app_clientes/config/api.dart';
 import 'package:app_clientes/pages/crear_clientes.dart';
 import 'package:app_clientes/services/auth_service.dart';
 import 'package:flutter/material.dart';
-import 'package:app_clientes/main.dart';
 import 'package:http/http.dart' as http;
 
 class ListaClientes extends StatefulWidget {
