@@ -113,7 +113,7 @@ class _ListaClientesState extends State<ListaClientes> {
 
         children: [
 
-          // 🌈 FONDO
+          //  FONDO
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -133,7 +133,7 @@ class _ListaClientesState extends State<ListaClientes> {
 
               children: [
 
-                // 🔷 HEADER CON BOTONES
+                // HEADER CON BOTONES
                 Padding(
                   padding: const EdgeInsets.all(16),
 
